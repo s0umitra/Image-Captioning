@@ -1,63 +1,100 @@
 import os
 import numpy as np
-from pickle import dump, load
-import sys
-from keras.preprocessing import image
+from pickle import dump
+from keras_preprocessing.image import load_img, img_to_array
 from time import time
 from keras.applications.inception_v3 import InceptionV3
 from keras.models import Model
 from keras.applications.inception_v3 import preprocess_input
-import tensorflow as tf
 
-from src.lib.path_check import run_path_check
+from src.lib.libic import init, set_opener
 
 
-# setting GPU memory growth for no memory glitches
-physical_devices = tf.config.experimental.list_physical_devices('GPU')
-assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
-config = tf.config.experimental.set_memory_growth(physical_devices[0], True)
-
-# Get and verify Paths
-caller = os.path.basename(__file__).split('.')[0]
-use_paths, status = run_path_check(caller)
-if not status:
-    sys.exit()
-path_dataset = use_paths[0]
-path_train_set = use_paths[1]
-path_extracted_features = 'output\\extracted_train_features.ed'
-
-# Load and create a new model, by removing the last layer (output layer) from the inception v3
-model = InceptionV3(weights='imagenet')
-model_popped = Model(inputs=model.input, outputs=model.layers[-2].output)
-
-features_encoded = dict()
-
-train_set = open(path_train_set)
-train_images = train_set.readlines()
-
-# to get total time
-start_time = time()
-
-for name in train_images:
-
-    name = name.strip()
-    image_path = path_dataset + name
-
-    print('> Processing : %s' % name)
-
-    img = image.load_img(image_path, target_size=(299, 299))
-    x = image.img_to_array(img)
+def feature_extractor(image, in_model):
+    img = load_img(image, target_size=(299, 299))
+    x = img_to_array(img)
     x = np.expand_dims(x, axis=0)
     x = preprocess_input(x)
 
-    feature_vector = model_popped.predict(x)
-    feature_vector = np.reshape(feature_vector, feature_vector.shape[1])
+    ext_ft = in_model.predict(x)
+    ext_ft = np.reshape(ext_ft, ext_ft.shape[1])
 
-    image_name = name.split('.')[0]
-    features_encoded[image_name] = feature_vector
+    return ext_ft
 
-print("Total Files processed : ", len(train_images))
-print("Total Time required   : ", time()-start_time)
 
-# store to file
-dump(features_encoded, open(path_extracted_features, 'wb'))
+def initialize():
+    # get program name
+    caller = os.path.basename(__file__).split('.')[0]
+
+    # initiate
+    paths = init(caller)
+
+    # set home path
+    path_home = paths[0]
+    os.chdir(path_home)
+
+    # set paths
+    path_dataset, \
+        path_train_set, \
+        path_test_set, \
+        path_extracted_train_features, \
+        path_extracted_test_features = paths[1]
+
+    # Load and create a new model, by removing the last layer (output layer) from the inception v3
+    model = InceptionV3(weights='imagenet')
+    model_popped = Model(inputs=model.input, outputs=model.layers[-2].output)
+
+    train_images = set_opener(path_train_set)
+
+    test_images = set_opener(path_test_set)
+
+    all_sets = [train_images, test_images]
+    outputs = [path_extracted_train_features, path_extracted_test_features]
+
+    ret = all_sets, path_dataset, model_popped, outputs
+
+    return ret
+
+
+def process_image(params):
+    all_sets, path_dataset, model_popped, outputs = params
+
+    total_count = 0
+
+    # set initial time
+    start_time = time()
+
+    for i, dataset in enumerate(all_sets):
+        count = 0
+        features_encoded = dict()
+
+        for name in dataset:
+            count += 1
+
+            name = name.strip()
+            image_path = path_dataset + name
+
+            feature_vector = feature_extractor(image_path, model_popped)
+
+            image_name = name.split('.')[0]
+            features_encoded[image_name] = feature_vector
+
+            print('> Processing {}/{}'.format(count, len(dataset)) + ' : %s' % name)
+
+        total_count += count
+
+        # store to file
+        dump(features_encoded, open(outputs[i], 'wb'))
+        print("\nFeatures extracted :", len(features_encoded))
+        print('Features saved to  :', outputs[i], end='\n\n')
+
+    return total_count, start_time
+
+
+if __name__ == '__main__':
+
+    parameters = initialize()
+    total, start = process_image(parameters)
+
+    print("Total Features Extracted :", total)
+    print("Processing Time          :", time() - start, "sec")

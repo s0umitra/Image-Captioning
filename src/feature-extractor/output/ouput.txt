@@ -1,1 +1,1 @@
-extracted_train_features.ed will be created here
+files of extracted data will be created here
