@@ -34,8 +34,6 @@ def get_paths(in_type):
             if not os.path.exists(home + i):
                 print('Path Not found : ' + i)
                 flag = False
-        else:
-            continue
 
     if in_type == 'feature_extractor':
         req = ['path_dataset', 'path_train_set', 'path_test_set', 'path_extracted_train_features',
@@ -49,6 +47,12 @@ def get_paths(in_type):
 
     if in_type == 'generate_descriptions':
         req = ['path_desc', 'path_tokens']
+
+    if in_type == 'model_evaluator':
+        req = ['path_dataset', 'path_desc', 'path_test_set', 'path_extracted_test_features']
+
+    if in_type == 'Caption_Generator':
+        req = ['path_dataset', 'path_desc', 'path_test_set', 'path_extracted_test_features']
 
     req_paths.append([x.split('=')[1].strip() for x in all_paths if x.split()[0].split('.')[1] in req])
 
@@ -64,4 +68,3 @@ def run_path_check(use_type):
         sys.exit()
 
     return use_paths
-

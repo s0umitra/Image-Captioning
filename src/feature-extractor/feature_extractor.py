@@ -1,28 +1,15 @@
 import os
-import numpy as np
 from pickle import dump
-from keras_preprocessing.image import load_img, img_to_array
 from time import time
 from keras.applications.inception_v3 import InceptionV3
 from keras.models import Model
-from keras.applications.inception_v3 import preprocess_input
 
 from src.lib.libic import init, set_opener
-
-
-def feature_extractor(image, in_model):
-    img = load_img(image, target_size=(299, 299))
-    x = img_to_array(img)
-    x = np.expand_dims(x, axis=0)
-    x = preprocess_input(x)
-
-    ext_ft = in_model.predict(x)
-    ext_ft = np.reshape(ext_ft, ext_ft.shape[1])
-
-    return ext_ft
+from src.lib.model_lib import feature_extractor
 
 
 def initialize():
+
     # get program name
     caller = os.path.basename(__file__).split('.')[0]
 
