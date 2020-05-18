@@ -12,6 +12,7 @@ from numpy import array
 
 def create_model(vocab_size, embedding_dim, embedding_matrix, max_length):
 
+    # LSTM Model
     inputs_image = Input(shape=(2048,))
     feature_layer_1 = Dropout(0.2)(inputs_image)
     feature_layer_2 = Dense(256, activation='relu')(feature_layer_1)
@@ -70,6 +71,7 @@ def data_generator(descriptions, image, word_to_int, max_length, num_photos_per_
 
 
 def train_model(idn, model, epochs, model_parameters_alpha, model_parameters_omega):
+
     path_model = 'src\\model-trainer\\models\\'
 
     train_descriptions = model_parameters_alpha[0]
@@ -112,6 +114,7 @@ def train_model(idn, model, epochs, model_parameters_alpha, model_parameters_ome
 
 
 def least_loss():
+
     path = 'src\\model-trainer\\models\\'
 
     all_models = os.listdir(path)
@@ -149,7 +152,6 @@ def pred_caption_greedy(photo, model, max_length, word_to_int, int_to_word):
 
 
 def feature_extractor(image, in_model):
-
     img = load_img(image, target_size=(299, 299))
     x = img_to_array(img)
     x = np.expand_dims(x, axis=0)
