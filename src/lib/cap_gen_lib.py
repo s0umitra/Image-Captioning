@@ -47,7 +47,7 @@ def process_text(text):
             pro_txt += '\n'
 
         if text[i] == ' ':
-            pro_txt += word + ' '
+            pro_txt += word
             word = ''
 
     if word != '':
