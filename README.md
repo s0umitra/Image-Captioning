@@ -1,6 +1,6 @@
 # **Image-Captioning**
 
-[![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://github.com/s0umitra/Face-ID/)
+[![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 
 #### Auto Image Caption Generator
 
@@ -31,4 +31,4 @@ A sample model is provided to try out the program
 
 This software is licenced under [MIT](https://github.com/s0umitra/Image-Captioning/blob/master/LICENSE)
 
-[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://github.com/s0umitra/Face-ID/)
+[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
