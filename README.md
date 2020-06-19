@@ -2,7 +2,8 @@
 
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 
-#### Auto Image Caption Generator
+An auto image caption generator built in python.
+This program takes image and provides a caption predicted for that image.
 
 ## Usage
 A sample model is provided to try out the program
